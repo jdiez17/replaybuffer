@@ -62,7 +62,7 @@ public:
 
 	virtual bool OnLoad(const CString& sArgs, CString& sMessage)
 	{
-		// If the module was loaded with ZNC connected to a network,
+		// If the module has been loaded with ZNC connected to a network,
 		// add a timer that saves channel buffers every minute.
 		if(GetNetwork()->IsIRCConnected())
 		{
