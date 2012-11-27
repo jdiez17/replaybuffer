@@ -524,6 +524,7 @@ private:
 
 	bool SaveChannel(CChan& cChan)
 	{
+		CString sBuf;
 		// Set filenames to lower-case channel names in URL encoding to avoid "/"
 		// Since channel names are case-insensitive, lower-case names are used in filenames.
 		CString sPath = GetPath(cChan.GetName().AsLower().Escape_n(CString::EURL));
@@ -538,7 +539,10 @@ private:
 		// Rearrange the channel buffer so as to save it.
 		const CBuffer &Buffer = cChan.GetBuffer();
 		unsigned int bufSize=Buffer.Size();
-		CString sBuf;
+                // If bufSize is 0, don't save the buffer.
+                if(bufSize == 0)
+                    return true;
+
 		for (unsigned int i=0; i<bufSize ; ++i)
 		{
 			const CBufLine &Line = Buffer.GetBufLine(i);
