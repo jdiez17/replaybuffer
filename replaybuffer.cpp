@@ -413,6 +413,7 @@ private:
 
 			sFile.Split("\n", vsLines);
 
+                        timeval tv={0, 0};
 			for (it = vsLines.begin(); it != vsLines.end(); ++it)
 			{
 				CString sLine(*it);
@@ -425,7 +426,7 @@ private:
 					// timestamp
 					CString sTimestamp = sLine.Token(0);
 					sTimestamp.TrimLeft("@");
-					time_t tm = sTimestamp.ToLongLong();
+					tv.tv_sec = sTimestamp.ToLongLong();
 
 					// IRC message
 					CString sFormat = sLine.Token(1, true);
@@ -434,7 +435,7 @@ private:
 					CString sText(*++it);
 					sText.Trim();
 					// Add them to the channel buffer.
-					cChan.AddBuffer(sFormat, sText, tm);
+					cChan.AddBuffer(sFormat, sText, &tv);
 				}
 			}
 		}
@@ -467,7 +468,7 @@ private:
 		{
 			const CBufLine &bufLine = Buffer.GetBufLine(i);
 			// Format time.
-			logtime=bufLine.GetTime();
+			logtime=bufLine.GetTime().tv_sec;
 			localtime_r(&logtime, &t);
 			// Time formatted as Year/Month/Date [hour:minute:second am/pm]
 			if(!strftime(timeStr, sizeof(timeStr), "%Y/%b/%d [%I:%M:%S %P] ", &t))
@@ -528,14 +529,6 @@ private:
 		// Set filenames to lower-case channel names in URL encoding to avoid "/"
 		// Since channel names are case-insensitive, lower-case names are used in filenames.
 		CString sPath = GetPath(cChan.GetName().AsLower().Escape_n(CString::EURL));
-		if (!cChan.KeepBuffer()) {
-			CUtils::PrintMessage("["+GetModName()+".so] KeepBuffer is not enabled"
-					+" for this channel, deleting the channel buffer for "
-					+cChan.GetName());
-			if(!CFile::Delete(sPath))
-				DEBUG("["+GetModName()+".so] failed to delete ["+sPath+"]");
-			return false;
-		}
 		// Rearrange the channel buffer so as to save it.
 		const CBuffer &Buffer = cChan.GetBuffer();
 		unsigned int bufSize=Buffer.Size();
@@ -546,7 +539,7 @@ private:
 		for (unsigned int i=0; i<bufSize ; ++i)
 		{
 			const CBufLine &Line = Buffer.GetBufLine(i);
-			sBuf+= "@"+CString(Line.GetTime())+" "+Line.GetFormat()+"\n"+Line.GetText()+"\n";
+			sBuf+= "@"+CString(Line.GetTime().tv_sec)+" "+Line.GetFormat()+"\n"+Line.GetText()+"\n";
 		}
 
 		CFile File(sPath);
