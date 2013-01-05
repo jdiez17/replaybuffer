@@ -177,8 +177,8 @@ public:
 		}
 
 		// Save each channel buffer to disk
-		const vector<CChan *>& vChans = pNetwork->GetChans();
-		vector<CChan*>::const_iterator it;
+		const std::vector<CChan *>& vChans = pNetwork->GetChans();
+		std::vector<CChan*>::const_iterator it;
 		for (it=vChans.begin(); it != vChans.end(); ++it)
 		{
 			CChan &cChan=**it;
@@ -368,7 +368,7 @@ private:
 			sFile=eFile.Escape_n(CString::EURL,CString::EASCII);
 
 			if(sFile.WildCmp(slWild))
-				mcString.insert(pair<CString,CString>(sFile, ePath));
+				mcString.insert(std::pair<CString,CString>(sFile, ePath));
 		}
 	}
 
